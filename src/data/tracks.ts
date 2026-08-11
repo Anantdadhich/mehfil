@@ -15,15 +15,15 @@ const getEnv = (key: string) =>
   typeof import.meta !== "undefined" && import.meta.env ? (import.meta.env[key] as string | undefined) : undefined;
 
 export const YOUTUBE_PLAYLIST_ID =
-  getEnv("VITE_YOUTUBE_PLAYLIST_ID") || "PLJeNQvgQ4Sl9lLAjyhs8vJvA2-HO0rWWX";
-
-export const SPOTIFY_PLAYLIST_ID =
-  getEnv("VITE_SPOTIFY_PLAYLIST_ID") || "3aVvXfZZds4cjdZXloUzuv";
+  getEnv("VITE_YOUTUBE_PLAYLIST_ID") || "RDATgn";
 
 export const YOUTUBE_MUSIC_URL =
-  getEnv("VITE_YOUTUBE_MUSIC_URL") || "https://music.youtube.com/watch?v=YJWR_MVFigs";
+  getEnv("VITE_YOUTUBE_MUSIC_URL") ||
+  "https://music.youtube.com/playlist?list=RDATgn&playnext=1&si=djLsfxIoV2qf3jo8";
 
-export const SPOTIFY_PLAYLIST_URL = `https://open.spotify.com/playlist/${SPOTIFY_PLAYLIST_ID}`;
+export const SPOTIFY_PLAYLIST_URL =
+  getEnv("VITE_SPOTIFY_PLAYLIST_URL") ||
+  "https://open.spotify.com/playlist/4FNWiaew22sp5HgFsQoATe?si=elR-6t9WS_igGurCPWvr3A&utm_source=copy-link&pi=PQ5b96Z1R6WBA&nd=1&dlsi=100eb82703324490";
 export const YOUTUBE_PLAYLIST_URL = YOUTUBE_MUSIC_URL;
 
 // Exact 13 Ghazals provided by user via YouTube links (5 initial + 8 from README.md)
