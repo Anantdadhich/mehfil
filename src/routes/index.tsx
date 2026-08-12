@@ -444,6 +444,44 @@ export function Mehfil() {
     setIndex((prev) => getPrevTrackIndex(prev, shuffle));
   }, [getPrevTrackIndex, shuffle]);
 
+  // Media Session API for lock screen controls & mobile background playback metadata
+  useEffect(() => {
+    if (typeof window !== "undefined" && "mediaSession" in navigator) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: track.title,
+          artist: track.artist,
+          album: track.album || "Mehfil Ghazal Room",
+          artwork: [
+            { src: track.cover_url, sizes: "512x512", type: "image/jpeg" },
+          ],
+        });
+
+        navigator.mediaSession.setActionHandler("play", () => {
+          setPlaying(true);
+          const player = ytPlayerRef.current;
+          if (player && typeof player.playVideo === "function") player.playVideo();
+        });
+
+        navigator.mediaSession.setActionHandler("pause", () => {
+          setPlaying(false);
+          const player = ytPlayerRef.current;
+          if (player && typeof player.pauseVideo === "function") player.pauseVideo();
+        });
+
+        navigator.mediaSession.setActionHandler("previoustrack", () => {
+          goPrev();
+        });
+
+        navigator.mediaSession.setActionHandler("nexttrack", () => {
+          goNext();
+        });
+      } catch (err) {
+        // Ignore unsupported media session actions
+      }
+    }
+  }, [track, goPrev, goNext]);
+
   const toggleShuffle = () => {
     setShuffle((s) => {
       const next = !s;
@@ -586,7 +624,7 @@ export function Mehfil() {
                 <ul className="space-y-1.5 text-cream/70 list-disc list-inside">
                   <li><strong className="text-cream">Smart Random & Resume:</strong> Fresh visits start with a random Ghazal. Active listening resumes right where you left off.</li>
                   <li><strong className="text-cream">Shuffle Mode:</strong> Toggle shuffle anytime to randomize the order.</li>
-                  <li><strong className="text-cream">Playlist:</strong> Browse and choose from all 41 handpicked Ghazals.</li>
+                  <li><strong className="text-cream">Playlist:</strong> Browse and choose from all handpicked Ghazals.</li>
                 </ul>
               </div>
 
@@ -916,7 +954,7 @@ export function Mehfil() {
               className="flex items-center gap-2.5 p-2.5 rounded-2xl border border-cream/10 bg-cream/5 hover:bg-cream/15 text-cream/90 transition-all text-left cursor-pointer"
             >
               <ListMusic className="h-4 w-4 text-amber-300" />
-              <span>Browse Playlist (41 Ghazals)</span>
+              <span>Browse Playlist</span>
             </button>
 
             <a
