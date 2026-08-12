@@ -4,6 +4,7 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  Flame,
   HelpCircle,
   Image as ImageIcon,
   ListMusic,
@@ -24,7 +25,8 @@ import {
   X,
 } from "lucide-react";
 
-import bgOriginal from "@/assets/mehfil-bg-new.png";
+import bg2Image from "@/assets/bg2.png";
+import bgOriginal from "@/assets/bg.png";
 import bg3D from "@/assets/mehfil-bg-3d.png";
 import {
   AUTHENTIC_GHAZALS,
@@ -149,6 +151,11 @@ const ARTIST_LIST = [
   "Mehdi Hassan",
   "Ghulam Ali",
   "Pankaj Udhas",
+  "Piyush Mishra",
+  "Nusrat Fateh Ali Khan",
+  "Sajjad Ali",
+  "Kishore Kumar",
+  "Javed Bashir",
   "Farida Khanum",
   "Chandan Dass",
   "Begum Akhtar",
@@ -176,8 +183,12 @@ export function Mehfil() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [sleepSecondsLeft, setSleepSecondsLeft] = useState<number | null>(null);
   const [selectedArtist, setSelectedArtist] = useState<string>("All");
-  const [use3DBG, setUse3DBG] = useState(true);
+  const [lampGlow, setLampGlow] = useState(true);
+  const [bgSelection, setBgSelection] = useState<"clean" | "classic" | "haveli">("classic");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const activeBg =
+    bgSelection === "clean" ? bg2Image : bgSelection === "classic" ? bgOriginal : bg3D;
 
   const ytPlayerRef = useRef<YTPlayerInstance | null>(null);
   const ytReadyRef = useRef(false);
@@ -509,6 +520,13 @@ export function Mehfil() {
         setShowTrackList((t) => !t);
       } else if (e.key === "?" || e.key === "h" || e.key === "H") {
         setShowInfoModal((i) => !i);
+      } else if (e.key === "g" || e.key === "G") {
+        setLampGlow((g) => {
+          const next = !g;
+          setNotice(next ? "Warm Lamp Light On 🪔" : "Dim Midnight Light 🌙");
+          setTimeout(() => setNotice(null), 2500);
+          return next;
+        });
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -526,8 +544,8 @@ export function Mehfil() {
       {/* YouTube Player Container */}
       <div
         className={`fixed right-4 sm:right-6 top-16 sm:top-20 z-40 w-72 sm:w-80 h-44 sm:h-48 rounded-2xl overflow-hidden border border-cream/20 shadow-2xl bg-black/90 transition-all duration-300 ${showVideo
-            ? "opacity-100 scale-100 pointer-events-auto"
-            : "opacity-0 scale-95 pointer-events-none absolute -left-[9999px] -top-[9999px]"
+          ? "opacity-100 scale-100 pointer-events-auto"
+          : "opacity-0 scale-95 pointer-events-none absolute -left-[9999px] -top-[9999px]"
           }`}
       >
         <div id="mehfil-yt-player-element" className="w-full h-full" />
@@ -640,8 +658,8 @@ export function Mehfil() {
                   key={artistName}
                   onClick={() => setSelectedArtist(artistName)}
                   className={`px-3 py-1 rounded-full text-[11px] font-medium shrink-0 transition-all ${selectedArtist === artistName
-                      ? "bg-cream text-ink font-semibold"
-                      : "bg-cream/10 text-cream/70 hover:bg-cream/20 hover:text-cream"
+                    ? "bg-cream text-ink font-semibold"
+                    : "bg-cream/10 text-cream/70 hover:bg-cream/20 hover:text-cream"
                     }`}
                 >
                   {artistName}
@@ -657,8 +675,8 @@ export function Mehfil() {
                     key={t.id}
                     onClick={() => selectTrack(origIndex)}
                     className={`w-full flex items-center gap-4 p-3 rounded-xl transition-all text-left group ${origIndex === index
-                        ? "bg-cream/15 text-cream font-semibold ring-1 ring-cream/30"
-                        : "hover:bg-cream/5 text-cream/80 hover:text-cream"
+                      ? "bg-cream/15 text-cream font-semibold ring-1 ring-cream/30"
+                      : "hover:bg-cream/5 text-cream/80 hover:text-cream"
                       }`}
                   >
                     <span className="text-xs font-mono w-6 shrink-0 text-cream/40 group-hover:text-cream/70">
@@ -688,43 +706,82 @@ export function Mehfil() {
       <div
         className="absolute inset-[-4%] bg-cover bg-center animate-breathe will-change-transform brightness-115"
         style={{
-          backgroundImage: `url(${use3DBG ? bg3D : bgOriginal})`,
+          backgroundImage: `url(${activeBg})`,
           transform: `translate3d(${drift.x * -14}px, ${drift.y * -4}px, 0) scale(1.06)`,
           transition: "transform 1.4s cubic-bezier(0.16,1,0.3,1)",
         }}
       />
-      <div className="pointer-events-none absolute inset-0 bg-scene-veil" />
-      <div className="pointer-events-none absolute inset-0 bg-grain opacity-[0.16] mix-blend-overlay" />
+      {/* Interactive Golden Candle / Lamp Glow Overlay */}
+      <div
+        className={`pointer-events-none absolute inset-0 transition-opacity duration-1000 z-10 ${lampGlow ? "opacity-100" : "opacity-0"
+          }`}
+        style={{
+          background:
+            "radial-gradient(ellipse 85% 65% at 50% 38%, rgba(251, 191, 36, 0.22), rgba(245, 158, 11, 0.12) 45%, rgba(0, 0, 0, 0.4) 90%)",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-scene-veil z-10" />
+      <div className="pointer-events-none absolute inset-0 bg-grain opacity-[0.16] mix-blend-overlay z-10" />
 
       {/* Top Header Bar */}
-      <header className="relative z-20 flex items-center justify-between gap-3 px-4 pt-4 text-[11px] uppercase tracking-[0.18em] text-cream/75 sm:px-8 sm:pt-7 sm:text-xs">
+      <header className="relative z-20 flex items-center justify-between gap-3 px-4 pt-4 text-xs uppercase tracking-[0.18em] text-cream/80 sm:px-8 sm:pt-7 sm:text-xs">
         {/* Left: Time + Live Listeners + Sleep Timer */}
         <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0 rounded-full border border-cream/15 bg-black/40 px-3.5 py-1.5 backdrop-blur-xl shadow-lg">
-          <span className="tabular-nums font-semibold text-cream">{now ?? "—"}</span>
-          <span className="flex items-center gap-1.5 text-[10px] sm:text-xs text-cream/85">
+          <span className="tabular-nums font-semibold text-cream text-xs sm:text-xs">{now ?? "—"}</span>
+          <span className="flex items-center gap-1.5 text-[11px] sm:text-xs text-cream/85">
             <span className="h-1.5 w-1.5 rounded-full bg-ember shadow-[0_0_8px_var(--ember)] animate-pulse-soft" />
             {listeners} <span className="inline">listening</span>
           </span>
           {sleepSecondsLeft !== null && (
-            <span className="flex items-center gap-1 text-[10px] text-amber-300 font-mono bg-cream/15 px-2 py-0.5 rounded-full">
+            <span className="flex items-center gap-1 text-[11px] text-amber-300 font-mono bg-cream/15 px-2 py-0.5 rounded-full">
               <Moon className="h-3 w-3" /> {fmt(sleepSecondsLeft)}
             </span>
           )}
         </div>
 
         {/* Desktop Navigation Links (md:flex) */}
-        <nav className="hidden md:flex items-center gap-2.5 sm:gap-3.5 lg:gap-4.5 text-[10px] sm:text-[11px] font-medium tracking-[0.18em]">
+        <nav className="hidden md:flex items-center gap-3 sm:gap-4 lg:gap-5 text-[11px] sm:text-xs font-medium tracking-[0.18em]">
           <button
             onClick={() => {
-              setUse3DBG((v) => !v);
-              setNotice(!use3DBG ? "Night Room Atmosphere" : "Classic Room Atmosphere");
-              setTimeout(() => setNotice(null), 2500);
+              setLampGlow((g) => {
+                const next = !g;
+                setNotice(next ? "Warm Lamp Light On 🪔" : "Dim Midnight Light 🌙");
+                setTimeout(() => setNotice(null), 2500);
+                return next;
+              });
+            }}
+            className="link-quiet flex items-center gap-1 cursor-pointer"
+            title="Toggle Warm Lamp Light (G)"
+          >
+            <Flame className={`h-3.5 w-3.5 ${lampGlow ? "text-amber-400 animate-pulse" : "text-cream/50"}`} />
+            <span>{lampGlow ? "Warm Light" : "Dim Light"}</span>
+          </button>
+          <button
+            onClick={() => {
+              setBgSelection((curr) => {
+                const next = curr === "classic" ? "clean" : curr === "clean" ? "haveli" : "classic";
+                const label =
+                  next === "classic"
+                    ? "Classic Room"
+                    : next === "clean"
+                      ? "Warm Room"
+                      : "Haveli Room";
+                setNotice(`${label} Atmosphere`);
+                setTimeout(() => setNotice(null), 2500);
+                return next;
+              });
             }}
             className="link-quiet flex items-center gap-1 cursor-pointer"
             title="Switch Room Atmosphere"
           >
             <ImageIcon className="h-3.5 w-3.5 text-amber-300" />
-            <span>{use3DBG ? "Night Room" : "Classic Room"}</span>
+            <span>
+              {bgSelection === "classic"
+                ? "Classic Room"
+                : bgSelection === "clean"
+                  ? "Warm Room"
+                  : "Haveli Room"}
+            </span>
           </button>
           <button
             onClick={() => setShowInfoModal(true)}
@@ -778,16 +835,16 @@ export function Mehfil() {
             aria-label="Toggle navigation menu"
           >
             {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            <span className="text-[10px] uppercase tracking-widest font-semibold">Menu</span>
+            <span className="text-[11px] uppercase tracking-widest font-semibold">Menu</span>
           </button>
         </div>
       </header>
 
       {/* Mobile Glassmorphic Navigation Dropdown Overlay */}
       {mobileNavOpen && (
-        <div className="fixed top-16 right-4 z-40 w-70 rounded-3xl border border-cream/20 bg-[#140a0c]/95 p-4.5 text-cream shadow-[0_25px_60px_rgba(0,0,0,0.95)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-3 duration-200 md:hidden space-y-3">
+        <div className="fixed top-16 right-4 z-40 w-72 rounded-3xl border border-cream/20 bg-[#140a0c]/95 p-4.5 text-cream shadow-[0_25px_60px_rgba(0,0,0,0.95)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-3 duration-200 md:hidden space-y-3">
           <div className="flex items-center justify-between border-b border-cream/10 pb-2.5">
-            <span className="text-[10px] uppercase tracking-widest text-amber-300/80 font-semibold">Mehfil Navigation</span>
+            <span className="text-[11px] uppercase tracking-widest text-amber-300/80 font-semibold">Mehfil Navigation</span>
             <button
               onClick={() => setMobileNavOpen(false)}
               className="text-cream/50 hover:text-cream p-1 cursor-pointer"
@@ -796,18 +853,37 @@ export function Mehfil() {
             </button>
           </div>
 
-          <div className="flex flex-col gap-2.5 text-xs">
+          <div className="flex flex-col gap-2.5 text-xs sm:text-sm font-medium">
             <button
               onClick={() => {
-                setUse3DBG((v) => !v);
+                setLampGlow((g) => !g);
                 setMobileNavOpen(false);
-                setNotice(!use3DBG ? "Night Room Atmosphere" : "Classic Room Atmosphere");
+                setNotice(!lampGlow ? "Warm Lamp Light On 🪔" : "Dim Midnight Light 🌙");
+                setTimeout(() => setNotice(null), 2500);
+              }}
+              className="flex items-center gap-2.5 p-2.5 rounded-2xl border border-amber-500/20 bg-amber-950/30 hover:bg-amber-900/40 text-amber-200 transition-all text-left cursor-pointer"
+            >
+              <Flame className="h-4 w-4 text-amber-400 animate-pulse" />
+              <span>{lampGlow ? "Warm Lamp Light On 🪔" : "Dim Midnight Light 🌙"}</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setBgSelection((curr) => (curr === "classic" ? "clean" : curr === "clean" ? "haveli" : "classic"));
+                setMobileNavOpen(false);
+                setNotice("Switched Room Atmosphere");
                 setTimeout(() => setNotice(null), 2500);
               }}
               className="flex items-center gap-2.5 p-2.5 rounded-2xl border border-cream/10 bg-cream/5 hover:bg-cream/15 text-cream/90 transition-all text-left cursor-pointer"
             >
               <ImageIcon className="h-4 w-4 text-amber-300" />
-              <span>{use3DBG ? "Switch to Classic Room" : "Switch to Night Room"}</span>
+              <span>
+                {bgSelection === "classic"
+                  ? "Room: Classic"
+                  : bgSelection === "clean"
+                    ? "Room: Warm"
+                    : "Room: Haveli"}
+              </span>
             </button>
 
             <button
@@ -876,10 +952,15 @@ export function Mehfil() {
           transition: "transform 1.6s cubic-bezier(0.16,1,0.3,1)",
         }}
       >
-        <h1 className="font-display text-cream text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[8.5vw] xl:text-[7.5vw] leading-[0.85] tracking-tight drop-shadow-[0_20px_60px_rgba(0,0,0,0.75)]">
+        <h1
+          className={`font-display text-cream text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[8.5vw] xl:text-[7.5vw] leading-[0.85] tracking-wide transition-all duration-700 ${lampGlow
+            ? "drop-shadow-[0_0_35px_rgba(251,191,36,0.45)] text-amber-50"
+            : "drop-shadow-[0_20px_60px_rgba(0,0,0,0.85)]"
+            }`}
+        >
           महफ़िल
         </h1>
-        <p className="mt-2 text-[9px] uppercase tracking-[0.45em] text-cream/75 sm:mt-3 sm:text-xs md:text-xs drop-shadow-md font-medium">
+        <p className="mt-2 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.38em] sm:tracking-[0.45em] text-cream/80 sm:mt-3 drop-shadow-md font-medium">
           A Late-Night Ghazal Room
         </p>
       </div>
@@ -887,7 +968,7 @@ export function Mehfil() {
       {/* Floating Pill Player Dock */}
       <div className="fixed inset-x-0 bottom-4 sm:bottom-8 md:bottom-10 z-30 flex flex-col items-center gap-2 px-3 sm:px-6">
         {notice && (
-          <p className="rounded-full border border-cream/15 bg-black/60 px-4 py-1.5 text-[11px] tracking-wide text-cream/90 backdrop-blur-2xl shadow-lg animate-in fade-in duration-200">
+          <p className="rounded-full border border-cream/15 bg-black/60 px-4 py-1.5 text-[11px] sm:text-xs tracking-wide text-cream/90 backdrop-blur-2xl shadow-lg animate-in fade-in duration-200">
             {notice}
           </p>
         )}
@@ -895,24 +976,28 @@ export function Mehfil() {
         <div className="w-full max-w-[680px] rounded-full border border-cream/25 bg-[#160b0e]/95 px-4 py-3 shadow-[0_25px_60px_rgba(0,0,0,0.9)] backdrop-blur-3xl sm:px-6 sm:py-3.5">
           <div className="flex items-center gap-2.5 sm:gap-4 md:gap-5">
             {/* Circular Track Cover Art */}
-            <div className="relative shrink-0 cursor-pointer" onClick={() => setShowTrackList(true)} title="View playlist">
+            <div
+              className={`relative shrink-0 cursor-pointer overflow-hidden rounded-full aspect-square h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 ring-2 ring-cream/35 shadow-md flex items-center justify-center bg-black/90 ${playing ? "animate-spin-slow" : ""
+                }`}
+              onClick={() => setShowTrackList(true)}
+              title="View playlist"
+            >
               <img
                 src={track.cover_url}
                 alt={`${track.title} artwork`}
                 width={512}
                 height={512}
                 loading="lazy"
-                className={`h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-cream/30 shadow-md sm:h-12 sm:w-12 md:h-14 md:w-14 ${playing ? "animate-spin-slow" : ""
-                  }`}
+                className="h-full w-full object-cover object-center rounded-full scale-130"
               />
             </div>
 
             {/* Song Title, Artist & Progress Bar */}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-cream sm:text-sm md:text-[15px]">
+              <p className="truncate text-sm font-semibold text-cream sm:text-base md:text-[16px]">
                 {track.title}
               </p>
-              <p className="truncate text-[11px] text-cream/60 sm:text-xs">{track.artist}</p>
+              <p className="truncate text-[12px] text-cream/70 sm:text-xs">{track.artist}</p>
 
               {/* Progress Bar */}
               <div
@@ -934,7 +1019,7 @@ export function Mehfil() {
               </div>
 
               {/* Progress Timestamp */}
-              <div className="mt-0.5 flex justify-start text-[10px] sm:text-[11px] tabular-nums text-cream/50">
+              <div className="mt-0.5 flex justify-start text-[11px] sm:text-xs tabular-nums text-cream/60">
                 <span>
                   {fmt(progress)} / {fmt(duration)}
                 </span>
