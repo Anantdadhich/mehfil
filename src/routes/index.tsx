@@ -193,7 +193,6 @@ export function Mehfil() {
   const ytPlayerRef = useRef<YTPlayerInstance | null>(null);
   const ytReadyRef = useRef(false);
   const [ytReady, setYtReady] = useState(false);
-  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   const shuffleRef = useRef(shuffle);
@@ -382,36 +381,6 @@ export function Mehfil() {
     }
   }, [getNextTrackIndex]);
 
-  // HTML5 Background Audio Engine (Enables mobile Chrome & iOS Safari background playback)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const audio = new Audio();
-    audio.preload = "auto";
-    audio.volume = 0.001; // Silent HTML5 Audio keep-alive track for background session
-    bgAudioRef.current = audio;
-
-    const handleEnded = () => {
-      setIndex((prev) => getNextTrackIndex(prev, shuffleRef.current));
-    };
-
-    audio.addEventListener("ended", handleEnded);
-    return () => {
-      audio.removeEventListener("ended", handleEnded);
-      audio.pause();
-    };
-  }, [getNextTrackIndex]);
-
-  // Sync HTML5 Background Audio source on track change
-  useEffect(() => {
-    if (bgAudioRef.current && track.audio_url) {
-      bgAudioRef.current.src = track.audio_url;
-      if (playing) {
-        bgAudioRef.current.play().catch(() => {});
-      }
-    }
-  }, [index, track.audio_url]);
-
   // Fast Load new track into YouTube Player on index change
   useEffect(() => {
     const player = ytPlayerRef.current;
@@ -444,26 +413,26 @@ export function Mehfil() {
   // Controls
   const togglePlay = () => {
     const player = ytPlayerRef.current;
-    const bgAudio = bgAudioRef.current;
 
-    if (playing) {
-      setPlaying(false);
-      if (player && typeof player.pauseVideo === "function") player.pauseVideo();
-      if (bgAudio) bgAudio.pause();
-    } else {
-      setPlaying(true);
-      if (bgAudio && track.audio_url) {
-        bgAudio.play().catch(() => {});
-      }
-      if (ytReady && player && typeof player.playVideo === "function") {
+    if (ytReady && player && typeof player.playVideo === "function") {
+      if (playing) {
+        player.pauseVideo();
+        setPlaying(false);
+      } else {
         try {
           if (typeof player.unMute === "function") player.unMute();
           if (typeof player.setVolume === "function") player.setVolume(100);
           player.playVideo();
+          setPlaying(true);
         } catch {
-          // Ignore
+          setNotice("Click play again to start audio.");
+          setTimeout(() => setNotice(null), 3000);
         }
       }
+    } else {
+      setPlaying((p) => !p);
+      setNotice("Loading YouTube audio...");
+      setTimeout(() => setNotice(null), 3000);
     }
   };
 
@@ -475,7 +444,7 @@ export function Mehfil() {
     setIndex((prev) => getPrevTrackIndex(prev, shuffle));
   }, [getPrevTrackIndex, shuffle]);
 
-  // Media Session API for lock screen controls & mobile background playback metadata
+  // Media Session API for lock screen controls & playback metadata
   useEffect(() => {
     if (typeof window !== "undefined" && "mediaSession" in navigator) {
       try {
@@ -490,14 +459,12 @@ export function Mehfil() {
 
         navigator.mediaSession.setActionHandler("play", () => {
           setPlaying(true);
-          if (bgAudioRef.current) bgAudioRef.current.play().catch(() => {});
           const player = ytPlayerRef.current;
           if (player && typeof player.playVideo === "function") player.playVideo();
         });
 
         navigator.mediaSession.setActionHandler("pause", () => {
           setPlaying(false);
-          if (bgAudioRef.current) bgAudioRef.current.pause();
           const player = ytPlayerRef.current;
           if (player && typeof player.pauseVideo === "function") player.pauseVideo();
         });
