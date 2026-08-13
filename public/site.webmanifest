@@ -1,0 +1,16 @@
+{
+  "name": "MEHFIL — A Late-Night Ghazal Room",
+  "short_name": "MEHFIL",
+  "description": "A quiet night in an old city. Somewhere inside, a ghazal is playing and everyone has gone silent.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#160b0e",
+  "theme_color": "#160b0e",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -119,20 +119,40 @@ function loadSavedState(): SavedState {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MEHFIL — A Late-Night Ghazal Listening Room" },
+      { title: "MEHFIL — A Late-Night Ghazal Room" },
       {
         name: "description",
         content:
-          "MEHFIL is a cinematic listening room for Ghazals — Jagjit Singh, Mehdi Hassan, Ghulam Ali, Pankaj Udhas & Farida Khanum.",
+          "MEHFIL is a cinematic listening room for Ghazals — Jagjit Singh, Mehdi Hassan, Ghulam Ali, Pankaj Udhas, Piyush Mishra & Farida Khanum.",
       },
-      { property: "og:title", content: "MEHFIL — A Late-Night Ghazal Listening Room" },
+      { property: "og:site_name", content: "MEHFIL" },
+      { property: "og:title", content: "MEHFIL — A Late-Night Ghazal Room" },
       {
         property: "og:description",
         content:
           "A quiet night in an old city. Somewhere inside, a ghazal is playing and everyone has gone silent.",
       },
+      { property: "og:url", content: "https://mehfilroom.online/" },
+      { property: "og:image", content: "https://mehfilroom.online/logo.png" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://mehfilroom.online/logo.png" },
+    ],
+    links: [{ rel: "canonical", href: "https://mehfilroom.online/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "MusicPlaylist",
+          name: "MEHFIL Late-Night Ghazals",
+          description: "Curated collection of timeless Ghazal masterpieces.",
+          url: "https://mehfilroom.online/",
+          image: "https://mehfilroom.online/logo.png",
+          genre: "Ghazal",
+          numTracks: 51,
+        }),
+      },
     ],
   }),
   component: Mehfil,

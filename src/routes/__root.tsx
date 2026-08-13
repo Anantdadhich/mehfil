@@ -72,23 +72,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MEHFIL — A Late-Night Ghazal Listening Room" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=5" },
+      { title: "MEHFIL — A Late-Night Ghazal Room" },
       {
         name: "description",
         content:
-          "A quiet night in an old city. Somewhere inside, a ghazal is playing and everyone has gone silent.",
+          "A quiet night in an old city. Stream 100% Ad-Free Ghazals from Jagjit Singh, Mehdi Hassan, Ghulam Ali, Pankaj Udhas & Piyush Mishra on mehfilroom.online.",
       },
-      { property: "og:title", content: "MEHFIL — A Late-Night Ghazal Listening Room" },
+      { name: "keywords", content: "ad free ghazals, free ghazals online, ghazal, mehfil, jagjit singh, mehdi hassan, ghulam ali, pankaj udhas, late night ghazal, mehfilroom" },
+      { name: "author", content: "Mehfil Room" },
+      { name: "theme-color", content: "#160b0e" },
+      { property: "og:site_name", content: "MEHFIL" },
+      { property: "og:title", content: "MEHFIL — A Late-Night Ghazal Room" },
       {
         property: "og:description",
         content:
           "A quiet night in an old city. Somewhere inside, a ghazal is playing and everyone has gone silent.",
       },
+      { property: "og:url", content: "https://mehfilroom.online/" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "MEHFIL — A Late-Night Ghazal Room" },
+      { name: "twitter:description", content: "Stream timeless Ghazal masterpieces in a cozy atmospheric room on mehfilroom.online" },
     ],
     links: [
+      { rel: "canonical", href: "https://mehfilroom.online/" },
+      { rel: "manifest", href: "/site.webmanifest" },
       {
         rel: "stylesheet",
         href: appCss,
@@ -99,7 +108,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Rozha+One&family=Tiro+Devanagari+Hindi:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/logo.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/logo.png" },
     ],
   }),
   shellComponent: RootShell,
